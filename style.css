@@ -1,4 +1,7 @@
 /* Bordered form */
+h1{
+    font-size: 50px;
+}
 li{
     width: 100%;
     padding: 12px 20px;
