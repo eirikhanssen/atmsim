@@ -45,7 +45,7 @@ atm.presentation.initializePages = function() {
 	this.shadow=document.createElement('div');
 	this.pages=[];
 	this.pages.startup=this.newPage('startup', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Starting up</p></div></div>');
-	this.pages.insertcard=this.newPage('insertcard', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Please insert card...</p></div>');
+	this.pages.insertcard=this.newPage('insertcard', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Please insert card...<object class="abs right middle" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
 	this.pages.dialpin=this.newPage('dialpin', '<div class="abs_center"><h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin" type="button" class="btn btn-lg btn-default">OK</button></div>');
 	this.pages.wrongpin=this.newPage('wrongpin','<div class="abs_center"><h1>Wrong pin. Please try again.</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin_wrong" type="button" class="btn btn-lg btn-default">OK</button></div>');
 	this.pages.timeout=this.newPage('timeout','<div class="abs_center"><h1>Timeout!</h1><p>Please take your card...</p></div>');

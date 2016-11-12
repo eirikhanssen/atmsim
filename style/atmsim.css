@@ -1,3 +1,5 @@
+.icon {height: 50%; width: 50%; float: right; border: 1px dashed red;}
+
 main::before {
 	display:block;
 	position: absolute;
@@ -40,8 +42,8 @@ section {
 	padding: 2em;
 	background: #eee;
 	position: absolute;
-	top: 1em;
-	bottom:1em;
+	top: .5em;
+	bottom:.5em;
 	left:13em;
 	right:13em;
 	border-radius: 0.5em;
@@ -90,14 +92,20 @@ button.fixed {
     height: 4em;
     font-size: 2em;
     margin: auto;
+    border-radius: .25em;
+    border: none;
+    box-shadow: 
+    	.125em .125em .25em rgba(25,25,25,0.7),
+    	inset -.125em -.125em .25em rgba(25,25,25,0.4),
+    	inset .125em .125em .5em rgba(255,255,255,0.7);
 }
 
-.middle {top:0; bottom:0;}
-.top {top:0;}
-.bottom {bottom:0;}
-.left {left:0;}
-.right {right:0;}
-.center {left:0; right:0;}
+.middle {top:.25em; bottom:.25em;}
+.top {top:.25em;}
+.bottom {bottom:.25em;}
+.left {left:.25em;}
+.right {right:.25em;}
+.center {left:.25em; right:.25em;}
 
 section > div {
 	min-width: 50%;
@@ -119,3 +127,5 @@ section > div {
 	transform: translate(-50%, -50%);
 	box-shadow: 0 0 6em #ccc;
 }
+
+.abs {position: absolute; margin:auto; padding:auto;}
