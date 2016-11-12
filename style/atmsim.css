@@ -1,22 +1,55 @@
-@media screen and (max-height: 300px) {
-	section {background-color: red;}
+main::before {
+	display:block;
+	position: absolute;
+	z-index: -1;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	content: "";
+	
+background: -moz-linear-gradient(top,  rgba(61,72,102,0.33) 0%, rgba(255,255,255,0) 50%, rgba(61,72,102,0.33) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  rgba(61,72,102,0.33) 0%,rgba(255,255,255,0) 50%,rgba(61,72,102,0.33) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  rgba(61,72,102,0.33) 0%,rgba(255,255,255,0) 50%,rgba(61,72,102,0.33) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#543d4866', endColorstr='#543d4866',GradientType=0 ); /* IE6-9 */
 }
 
-body {min-height: 50em;}
-main {position: absolute; z-index: 1;
+main::after {
+display:block;
+	position: absolute;
+	z-index: -2;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	content: "";
+
+	background: -moz-linear-gradient(left, rgba(61,72,102,0.33) 0%, rgba(255,255,255,0) 50%, rgba(61,72,102,0.33) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(left, rgba(61,72,102,0.33) 0%,rgba(255,255,255,0) 50%,rgba(61,72,102,0.33) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to right, rgba(61,72,102,0.33) 0%,rgba(255,255,255,0) 50%,rgba(61,72,102,0.33) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+}
+
+main {
+
+	position: absolute; z-index: 1;
 	display: block;
-top: 0; left:0; right:0; margin:0; bottom:0; box-sizing: border-box; padding-top: 2em;}
+top: 0; left:0; right:0; margin:0; bottom:0; box-sizing: border-box; padding-top: 2em;
+}
 
 section {
 	padding: 2em;
-	background: rgba(200,200,200,0.5);
+	background: #eee;
 	position: absolute;
-	top: 8em;
-	bottom:8em;
-	left:12em;
-	right:12em;
+	top: 1em;
+	bottom:1em;
+	left:13em;
+	right:13em;
 	border-radius: 0.5em;
-	overflow: auto;}
+	overflow: auto;
+	box-sizing: border-box;
+	border: 1px solid #bbb;
+	box-shadow: 0 0 6em #777;
+}
 
 
 header label {padding: .5em; font-size: 1.25em;}
@@ -32,7 +65,12 @@ header {
 	border: 1px solid #222;
 	box-shadow: 0 0 2em rgba(50,50,50,0.7);
 	border-top: none;
+	opacity: 0.05;
+	border-bottom-right-radius: 1em;
+	border-bottom-left-radius: 1em;
 }
+
+header:hover {opacity: 1;}
 
 header button {
 	color: black;
@@ -79,4 +117,5 @@ section > div {
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
+	box-shadow: 0 0 6em #ccc;
 }
