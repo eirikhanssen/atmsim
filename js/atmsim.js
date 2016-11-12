@@ -46,7 +46,7 @@ atm.presentation.initializePages = function() {
 	this.pages=[];
 	this.pages.startup=this.newPage('startup', '<h1>Meccano ATMs</h1><p>Starting up</p>');
 	this.pages.insertcard=this.newPage('insertcard', '<h1>Meccano ATMs</h1><p>Please insert card...</p>');
-	this.pages.dialpin=this.newPage('dialpin', '<input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin" type="button" class="btn btn-lg btn-default">OK</button>');
+	this.pages.dialpin=this.newPage('dialpin', '<h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin" type="button" class="btn btn-lg btn-default">OK</button>');
 }
 
 atm.presentation.activatePage = function (page) {
@@ -78,9 +78,13 @@ atm.presentation.activatePage = function (page) {
 
 atm.service.name='atm.service';
 
+atm.service.session={
+	
+};
+
 atm.service.init = function () {
 	// initialize the app
-	
+
 	var name = 'atm.service.init()';
 	//logThis(this);
 	log(name);
