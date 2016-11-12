@@ -47,6 +47,25 @@ atm.presentation.initializePages = function() {
 	this.pages.startup=this.newPage('startup', '<h1>Meccano ATMs</h1><p>Starting up</p>');
 	this.pages.insertcard=this.newPage('insertcard', '<h1>Meccano ATMs</h1><p>Please insert card...</p>');
 	this.pages.dialpin=this.newPage('dialpin', '<h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin" type="button" class="btn btn-lg btn-default">OK</button>');
+	this.pages.wrongpin=this.newPage('wrongpin','<h1>Wrong pin. Please try again.</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin_wrong" type="button" class="btn btn-lg btn-default">OK</button>');
+	this.pages.timeout=this.newPage('timeout','<h1>Timeout!</h1><p>Please take your card...</p>');
+	this.pages.goodbye=this.newPage('goodbye','<h1>Goodbye!</h1><p>Exiting...</p>');
+	this.pages.cardretained=this.newPage('cardretained','<h1>Card had been pin-blocked and retained by this ATM!</h1><p><strong>Reason:</strong> Too many unsuccessful pin attempts.</p><p>Please contact the bank during the opening hours.</p>');
+}
+
+atm.presentation.testPages = function() {
+	var body = document.querySelector('body');
+	var header = document.createElement('header');
+	header.innerHTML = '<label>Systems page test:&nbsp;</label>';
+	function addPageButton(page) {
+		var btn = document.createElement('button');
+		btn.innerText = page;
+		btn.addEventListener('click',function(){atm.presentation.activatePage(page)}, false);
+		return btn;
+	} for (var property_name in atm.presentation.pages) {
+		header.appendChild(addPageButton(property_name));
+	}
+	body.insertBefore(header,atm.presentation.main);
 }
 
 atm.presentation.activatePage = function (page) {
@@ -79,7 +98,7 @@ atm.presentation.activatePage = function (page) {
 atm.service.name='atm.service';
 
 atm.service.session={
-	
+
 };
 
 atm.service.init = function () {
@@ -91,12 +110,15 @@ atm.service.init = function () {
 
 	// initialize all the pages
 	atm.presentation.initializePages();
+
+	// load test pages
+	atm.presentation.testPages();
 	
 	// first activate the startup page
 	atm.presentation.activatePage('startup');
 	
 	// activate dialpin page after 3 seconds
-	window.setTimeout(function(){atm.presentation.activatePage('dialpin');},3000);
+	window.setTimeout(function(){atm.presentation.activatePage('insertcard');},3000);
 }
 
 /*
