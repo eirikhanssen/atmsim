@@ -1,42 +1,104 @@
-window.addEventListener('load',init,false);
-var atm = {};
+/*
+	============================================
+	 The globally visible main object with the different 'layers'
+	============================================
+*/
+var atm = {
+	name: 'atm',
+	presentation: {},
+	service: {},
+	business: {},
+	persistence: {}
+};
 
-function activatePage(page) {
-	console.log('activatePage(' + page + ')');
-
-	//make all pages inactive
-	for (var current_page in atm.pages) {
-    	if (atm.pages.hasOwnProperty(current_page)) {
-    		//console.log(page);
-        	atm.shadow.appendChild(atm.pages[current_page]);
-    	}
-	}
-
-	// activate the right page
-	atm.main.appendChild(atm.pages[page]);
-
+var logThis = function (obj) {
+	console.log(obj.name);
 }
 
-function newPage(pageName, inner){
+var log = function(txt) {
+	console.log(txt);
+}
+
+/*
+	============================================
+	 Presentation layer
+	============================================
+*/
+atm.presentation.name = 'atm.presentation';
+
+atm.presentation.newPage = function (pageName, inner){
+	var name = "atm.presentation.newPage("+"'"+pageName+"'"+")";
+	//logThis(this);
+	log(name);
 	var el = document.createElement('section');
 	el.setAttribute('id',pageName);
 	el.innerHTML=inner;
 	return el;
 }
 
-function init () {
-	var startupHTML = 
-	console.log("atm init");
-	atm.main=document.querySelector('main');
-	atm.shadow=document.createElement('div');
-	atm.pages=[];
-	atm.pages.startup=newPage('startup', '<h1>Meccano ATMs</h1><p>Starting up</p>');
-	atm.pages.insertcard=newPage('insertcard', '<h1>Meccano ATMs</h1><p>Please insert card...</p>');
-	atm.pages.dialpin=newPage('dialpin', '<input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin" type="button" class="btn btn-lg btn-default">OK</button>');
-	
-
-	activatePage('startup');
-
-	
+atm.presentation.initializePages = function() {
+	var name = 'atm.presentation.initializePages()';
+	//logThis(this);
+	log(name);
+	// this == atm.presentation
+	this.main=document.querySelector('main');
+	this.shadow=document.createElement('div');
+	this.pages=[];
+	this.pages.startup=this.newPage('startup', '<h1>Meccano ATMs</h1><p>Starting up</p>');
+	this.pages.insertcard=this.newPage('insertcard', '<h1>Meccano ATMs</h1><p>Please insert card...</p>');
+	this.pages.dialpin=this.newPage('dialpin', '<input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin" type="button" class="btn btn-lg btn-default">OK</button>');
 }
 
+atm.presentation.activatePage = function (page) {
+	var name = 'atm.presentation.activatePage('+ "'" + page +"')";
+	//logThis(this);
+	log(name);
+	// this == atm.presentation
+
+
+	//make all pages inactive
+	for (var current_page in this.pages) {
+    	if (this.pages.hasOwnProperty(current_page)) {
+    		//console.log(page);
+        	this.shadow.appendChild(this.pages[current_page]);
+    	}
+	}
+
+	// activate the right page
+	this.main.appendChild(this.pages[page]);
+}
+
+
+
+/*
+	============================================
+	 Service layer
+	============================================
+*/
+
+atm.service.name='atm.service';
+
+atm.service.init = function () {
+	var name = 'atm.service.init()';
+	//logThis(this);
+	log(name);
+	atm.presentation.initializePages();
+	atm.presentation.activatePage('startup');
+}
+
+/*
+	============================================
+	 Business layer
+	============================================
+*/
+
+atm.business.name='atm.business';
+
+/*
+	============================================
+	 Persistence layer
+	============================================
+*/
+atm.persistence.name='atm.persistence';
+
+window.addEventListener('load',atm.service.init,false);
