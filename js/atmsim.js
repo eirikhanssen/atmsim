@@ -79,11 +79,20 @@ atm.presentation.activatePage = function (page) {
 atm.service.name='atm.service';
 
 atm.service.init = function () {
+	// initialize the app
+	
 	var name = 'atm.service.init()';
 	//logThis(this);
 	log(name);
+
+	// initialize all the pages
 	atm.presentation.initializePages();
+	
+	// first activate the startup page
 	atm.presentation.activatePage('startup');
+	
+	// activate dialpin page after 3 seconds
+	window.setTimeout(function(){atm.presentation.activatePage('dialpin');},3000);
 }
 
 /*
