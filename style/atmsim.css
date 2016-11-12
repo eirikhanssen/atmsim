@@ -67,7 +67,7 @@ header {
 	border: 1px solid #222;
 	box-shadow: 0 0 2em rgba(50,50,50,0.7);
 	border-top: none;
-	opacity: 0.05;
+	opacity: 0.75;
 	border-bottom-right-radius: 1em;
 	border-bottom-left-radius: 1em;
 }
