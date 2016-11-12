@@ -44,13 +44,14 @@ atm.presentation.initializePages = function() {
 	this.main=document.querySelector('main');
 	this.shadow=document.createElement('div');
 	this.pages=[];
-	this.pages.startup=this.newPage('startup', '<h1>Meccano ATMs</h1><p>Starting up</p>');
-	this.pages.insertcard=this.newPage('insertcard', '<h1>Meccano ATMs</h1><p>Please insert card...</p>');
-	this.pages.dialpin=this.newPage('dialpin', '<h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin" type="button" class="btn btn-lg btn-default">OK</button>');
-	this.pages.wrongpin=this.newPage('wrongpin','<h1>Wrong pin. Please try again.</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin_wrong" type="button" class="btn btn-lg btn-default">OK</button>');
-	this.pages.timeout=this.newPage('timeout','<h1>Timeout!</h1><p>Please take your card...</p>');
-	this.pages.goodbye=this.newPage('goodbye','<h1>Goodbye!</h1><p>Exiting...</p>');
-	this.pages.cardretained=this.newPage('cardretained','<h1>Card had been pin-blocked and retained by this ATM!</h1><p><strong>Reason:</strong> Too many unsuccessful pin attempts.</p><p>Please contact the bank during the opening hours.</p>');
+	this.pages.startup=this.newPage('startup', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Starting up</p></div></div>');
+	this.pages.insertcard=this.newPage('insertcard', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Please insert card...</p></div>');
+	this.pages.dialpin=this.newPage('dialpin', '<div class="abs_center"><h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin" type="button" class="btn btn-lg btn-default">OK</button></div>');
+	this.pages.wrongpin=this.newPage('wrongpin','<div class="abs_center"><h1>Wrong pin. Please try again.</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin_wrong" type="button" class="btn btn-lg btn-default">OK</button></div>');
+	this.pages.timeout=this.newPage('timeout','<div class="abs_center"><h1>Timeout!</h1><p>Please take your card...</p></div>');
+	this.pages.goodbye=this.newPage('goodbye','<div class="abs_center"><h1>Goodbye!</h1><p>Exiting...</p>');
+	this.pages.cardretained=this.newPage('cardretained','<div class="abs_center"><h1>Card had been pin-blocked and retained by this ATM!</h1><p><strong>Reason:</strong> Too many unsuccessful pin attempts.</p><p>Please contact the bank during the opening hours.</p></div>');
+	this.pages.home=this.newPage('home','<button id="btn_home_balance"  class="left top">Balance</button><button id="btn_home_currency_rates" class="left middle">Currency Rates</button><button id="btn_home_quit" class="left bottom">Quit</button><button id="btn_home_withdraw" class="right top">Withdraw</button><button id="btn_home_pay" class="right middle">Payments</button>');
 }
 
 atm.presentation.testPages = function() {
