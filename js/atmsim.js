@@ -91,6 +91,11 @@ atm.presentation.initializePages = function() {
 		atm.presentation.activatePage('balance');
 	},false);
 
+	// activate balance go back button
+	this.pages.balance.querySelector('#btn_balance_go_back').addEventListener('click',function(event){
+		atm.presentation.activatePage('home');
+	},false);
+
 	var buttons = this.shadow.querySelectorAll('button');
 
 	for (var j = 0; j < buttons.length; j++) {
