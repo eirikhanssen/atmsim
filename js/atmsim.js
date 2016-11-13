@@ -45,6 +45,7 @@ atm.presentation.clearActionbuttons = function() {
 atm.presentation.updateBalance = function() {
 	var balance = atm.business.getBalance();
 	this.shadow.querySelector('#'+'showBalance').value=balance;
+	this.shadow.querySelector('#'+'paybill_showBalance').value=balance;
 }
 
 atm.presentation.initializePages = function() {
@@ -86,13 +87,47 @@ atm.presentation.initializePages = function() {
 	// activate home page buttons
 
 	this.pages.home.querySelector('#btn_home_balance').addEventListener('click',function(event){
-
 		atm.presentation.updateBalance();
 		atm.presentation.activatePage('balance');
 	},false);
 
+	this.pages.home.querySelector('#btn_home_withdraw').addEventListener('click',function(event){
+		atm.presentation.activatePage('cash');
+	},false);
+
+	this.pages.home.querySelector('#btn_home_pay').addEventListener('click',function(event){
+		atm.presentation.updateBalance();
+		atm.presentation.activatePage('paybill');
+	},false);
+
+	this.pages.home.querySelector('#btn_home_currency_rates').addEventListener('click',function(event){
+		atm.presentation.activatePage('currencies');
+	},false);
+
+
 	// activate balance go back button
 	this.pages.balance.querySelector('#btn_balance_go_back').addEventListener('click',function(event){
+		atm.presentation.activatePage('home');
+	},false);
+
+	// withdraw cash cancel button
+	this.pages.cash.querySelector('#btn_cash_cancel').addEventListener('click',function(event){
+		atm.presentation.activatePage('home');
+	},false);
+
+	this.pages.cash.querySelector('#btn_cash_other').addEventListener('click',function(event){
+		atm.presentation.activatePage('othercash');
+	},false);
+
+	this.pages.othercash.querySelector('#btn_othercash_cancel').addEventListener('click',function(event){
+		atm.presentation.activatePage('cash');
+	},false);
+
+	this.pages.currencies.querySelector('#btn_currency_go_back').addEventListener('click',function(event){
+		atm.presentation.activatePage('home');
+	},false);
+
+	this.pages.paybill.querySelector('#btn_paybills_cancel').addEventListener('click',function(event){
 		atm.presentation.activatePage('home');
 	},false);
 
