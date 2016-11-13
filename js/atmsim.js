@@ -36,6 +36,12 @@ atm.presentation.newPage = function (pageName, inner){
 	return el;
 }
 
+atm.presentation.clearActionbuttons = function() {
+	var name = "atm.presentation.clearActionbuttons()";
+	log(name);
+	atm.presentation.shadow.querySelector('#' + 'insertcard .actionbuttons').innerHTML="";
+}
+
 atm.presentation.initializePages = function() {
 	var name = 'atm.presentation.initializePages()';
 	//logThis(this);
@@ -47,7 +53,7 @@ atm.presentation.initializePages = function() {
 	this.shadow.innerHTML="";
 	this.pages=[];
 	this.pages.startup=this.newPage('startup', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Starting up</p></div></div>');
-	this.pages.insertcard=this.newPage('insertcard', '<div class="footer"></div><div class="abs_center"><h1>Meccano ATMs!</h1><p>Please insert card... <object class="abs right middle" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
+	this.pages.insertcard=this.newPage('insertcard', '<div class="actionbuttons"></div><div class="abs_center"><h1>Meccano ATMs!</h1><p>Please insert card... <object class="abs right middle" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
 	this.pages.dialpin=this.newPage('dialpin', '<button class="fixed bottom right" id="button_verify_pin_ok" type="button" class="btn btn-lg btn-default">OK</button><button class="fixed bottom left" id="button_verify_pin_quit" type="button" class="btn btn-lg btn-default">Quit</button><div class="abs_center"><h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
 	this.pages.wrongpin=this.newPage('wrongpin','<button class="fixed bottom right" id="button_wrongpin_ok" type="button" class="btn btn-lg btn-default">OK</button><button class="fixed bottom left" id="button_wrongpin_quit" type="button" class="btn btn-lg btn-default">Quit</button><div class="abs_center"><h1>Wrong pin. Please try again.</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
 	this.pages.timeout=this.newPage('timeout','<div class="abs_center"><h1>Timeout!</h1><p>Please take your card...</p></div>');
@@ -75,8 +81,6 @@ atm.presentation.initializePages = function() {
 
 	// action to log into different accounts
 
-	
-
 	function createLoginActionElement(accnum) {
 		var name = 'createLoginActionElement(' + accnum +')';
 		console.log(name);
@@ -94,9 +98,10 @@ atm.presentation.initializePages = function() {
 	}
 
 	var accounts = atm.business.getAccounts();
+
 	for(var l = 0; l < accounts.length; l++) {
 		var currentAccNum = accounts[l];
-		this.shadow.querySelector('#' + 'insertcard .footer').appendChild(createLoginActionElement(currentAccNum));
+		this.shadow.querySelector('#' + 'insertcard .actionbuttons').appendChild(createLoginActionElement(currentAccNum));
 	}
 
 	// increase/decrease amounts
@@ -231,6 +236,7 @@ atm.service.retainCard = function () {
 
 atm.service.quit = function () {
 	var name = "atm.service.quit()";
+	atm.presentation.clearActionbuttons();
 	log(name);
 	atm.presentation.activatePage('goodbye');
 	atm.service.ejectCard();
@@ -265,7 +271,7 @@ atm.business.getAccounts = function () {
 */
 atm.persistence.name='atm.persistence';
 atm.persistence.bankAccounts=[];
-
+atm.persistence.initialized = false;
 atm.persistence.getAccountList = function () {
 	var name = "atm.persistence.getAccountList()";
 	log(name);
@@ -281,12 +287,16 @@ atm.persistence.getAccountList = function () {
 atm.persistence.init = function() {
 		var name = 'atm.persistence.init()';
 		log(name);
+
 		// add some user accounts
 		// should check if they already exist...
-		this.bankAccounts.push(new this.BAcc({accountNumber:'123456789', pin:1234, balance:24500,currency:'NOK'}));
-		this.bankAccounts.push(new this.BAcc({accountNumber:'987654321', pin:9876, balance:32500,currency:'NOK'}));
-		this.bankAccounts.push(new this.BAcc({accountNumber:'012481632', pin:0124, balance:18500,currency:'NOK'}));
-}
+		if(!this.initialized) {
+			this.bankAccounts.push(new this.BAcc({accountNumber:'123456789', pin:1234, balance:24500,currency:'NOK'}));
+			this.bankAccounts.push(new this.BAcc({accountNumber:'987654321', pin:9876, balance:32500,currency:'NOK'}));
+			this.bankAccounts.push(new this.BAcc({accountNumber:'012481632', pin:0124, balance:18500,currency:'NOK'}));
+		}
+		this.initialized = true;
+	}
 
 
 atm.persistence.BAcc = function (props) {

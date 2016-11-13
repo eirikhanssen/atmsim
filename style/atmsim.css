@@ -225,7 +225,7 @@ output#cashAmount::after,output#showBalance::after, #paybill output::after, #pay
     box-shadow: 0 0 1em rgba(0,128,0,0.7);
 }
 
-.footer {
+.actionbuttons {
     background-color: transparent;
     position: fixed;
     z-index: 4;
