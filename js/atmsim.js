@@ -163,12 +163,33 @@ atm.service.init = function () {
 
 	// load test pages
 	atm.presentation.testPages();
+
+	// add event listeners
+	var quitButtons = atm.presentation.shadow.querySelectorAll('button[id*=quit]');
+	console.log(quitButtons);
+	for (var l=0; l<quitButtons.length; l++) {
+		quitButtons[l].addEventListener('click',atm.service.quit,false);
+	}
 	
 	// first activate the startup page
 	atm.presentation.activatePage('startup');
 	
 	// activate dialpin page after 3 seconds
 	window.setTimeout(function(){atm.presentation.activatePage('insertcard');},boot_timer);
+}
+
+atm.service.ejectCard = function () {
+	console.log('ejecting card...');
+}
+
+atm.service.retainCard = function () {
+	console.log('retaining card');
+}
+
+atm.service.quit = function () {
+	console.log('quitting ...');
+	atm.presentation.activatePage('goodbye');
+	atm.service.ejectCard();
 }
 
 /*
