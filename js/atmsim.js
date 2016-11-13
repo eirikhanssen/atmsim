@@ -231,6 +231,7 @@ atm.presentation.activatePage = function (page) {
 	this.main.appendChild(this.pages[page]);
 }
 
+// implement external API for gettin exchange rates
 atm.presentation.updateRates = function (rates) {
 	console.log(rates);
 	var currencies = document.createElement('div');
@@ -241,6 +242,13 @@ atm.presentation.updateRates = function (rates) {
 	currencies.innerHTML += "<li>1 " + rates.base + " = " + rates.rates['SEK'] + " SEK</li>";
 	currencies.innerHTML += "<li>1 " + rates.base + " = " + rates.rates['DKK'] + " DKK</li>";
 	currencies.innerHTML += "<li>1 " + rates.base + " = " + rates.rates['CNY'] + " CNY</li>";
+	currencies.innerHTML += "</ol>";
+	currencies.innerHTML += "<ol>";
+	currencies.innerHTML += "<li>1 EUR = " + 1/(rates.rates['EUR']) + " " + rates.base +"</li>";
+	currencies.innerHTML += "<li>1 USD = " + 1/(rates.rates['USD']) + " " + rates.base +"</li>";
+	currencies.innerHTML += "<li>1 SEK = " + 1/(rates.rates['SEK']) + " " + rates.base +"</li>";
+	currencies.innerHTML += "<li>1 DKK = " + 1/(rates.rates['DKK']) + " " + rates.base +"</li>";
+	currencies.innerHTML += "<li>1 CNY = " + 1/(rates.rates['CNY']) + " " + rates.base +"</li>";
 	currencies.innerHTML += "</ol>";
 	this.pages.currencies.querySelector("#" + 'currency_container').appendChild(currencies);
 	this.pages.currencies.querySelector("#" + 'currency_updated_date').innerText=rates.date;
