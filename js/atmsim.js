@@ -42,6 +42,11 @@ atm.presentation.clearActionbuttons = function() {
 	atm.presentation.shadow.querySelector('#' + 'insertcard .actionbuttons').innerHTML="";
 }
 
+atm.presentation.updateBalance = function() {
+	var balance = atm.business.getBalance();
+	this.shadow.querySelector('#'+'showBalance').value=balance;
+}
+
 atm.presentation.initializePages = function() {
 	var name = 'atm.presentation.initializePages()';
 	//logThis(this);
@@ -76,6 +81,14 @@ atm.presentation.initializePages = function() {
 	this.shadow.querySelector('#button_verify_pin_ok').addEventListener('click',function(event){
 		var pinvalue = document.querySelector('#input_dialpin').value;
 		atm.service.loginAttempt(pinvalue);
+	},false);
+
+	// activate home page buttons
+
+	this.pages.home.querySelector('#btn_home_balance').addEventListener('click',function(event){
+
+		atm.presentation.updateBalance();
+		atm.presentation.activatePage('balance');
 	},false);
 
 	var buttons = this.shadow.querySelectorAll('button');
@@ -190,15 +203,24 @@ atm.service.name='atm.service';
 
 atm.service.session={
 	currentAccount: null,
+	currentPin:null,
 	setCurrentSessionAccount: function(val) {
 		this.currentAccount = val;
 	},
 	getCurrentSessionAccount: function() {
 		return this.currentAccount;
+	},
+	setCurrentSessionPin: function(val) {
+		this.currentPin = val;
+	},
+	getCurrentSessionPin: function() {
+		return this.currentPin;
 	}
 };
 
 atm.service.loginAttempt = function (pin) {
+	// security breach
+	atm.service.session.setCurrentSessionPin(pin);
 	atm.business.loginAttempt(this.session.getCurrentSessionAccount(), pin);
 }
 
@@ -254,7 +276,6 @@ atm.service.quit = function () {
 	atm.presentation.activatePage('goodbye');
 	atm.service.ejectCard();
 	window.setTimeout(atm.service.init,2000);
-
 }
 
 /*
@@ -264,6 +285,11 @@ atm.service.quit = function () {
 */
 
 atm.business.name='atm.business';
+
+// NOTICE: security breach
+atm.business.getBalance = function() {
+	return atm.persistence.getBalance(atm.service.session.getCurrentSessionAccount(), atm.service.session.getCurrentSessionPin());
+}
 
 atm.business.init = function () {
 	var name = "atm.business.init()";
@@ -353,6 +379,16 @@ atm.persistence.pinVerified = function (acc,pin) {
 	// didn't find match
 	console.log('unknown accountNumber');
 	return false;
+}
+
+atm.persistence.getBalance = function ( acc, pin ) {
+	for (var i = 0; i < this.bankAccounts.length; i++) {
+		if (this.bankAccounts[i].getAccountNumber() === acc) {
+			if(this.bankAccounts[i].verifyPin(pin)) {
+				return this.bankAccounts[i].getBalance();
+			}
+		}
+	}
 }
 
 atm.persistence.BAcc = function (props) {
