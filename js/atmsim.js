@@ -42,10 +42,12 @@ atm.presentation.initializePages = function() {
 	log(name);
 	// this == atm.presentation
 	this.main=document.querySelector('main');
+	this.main.innerHTML="";
 	this.shadow=document.createElement('div');
+	this.shadow.innerHTML="";
 	this.pages=[];
 	this.pages.startup=this.newPage('startup', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Starting up</p></div></div>');
-	this.pages.insertcard=this.newPage('insertcard', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Please insert card...<object class="svgAnimation" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
+	this.pages.insertcard=this.newPage('insertcard', '<p id="action_insert_card">[Physically insert the card]</p><div class="abs_center"><h1>Meccano ATMs</h1><p>Please insert card... <object class="abs right middle" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
 	this.pages.dialpin=this.newPage('dialpin', '<button class="fixed bottom right" id="button_verify_pin_ok" type="button" class="btn btn-lg btn-default">OK</button><button class="fixed bottom left" id="button_verify_pin_quit" type="button" class="btn btn-lg btn-default">Quit</button><div class="abs_center"><h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
 	this.pages.wrongpin=this.newPage('wrongpin','<button class="fixed bottom right" id="button_wrongpin_ok" type="button" class="btn btn-lg btn-default">OK</button><button class="fixed bottom left" id="button_wrongpin_quit" type="button" class="btn btn-lg btn-default">Quit</button><div class="abs_center"><h1>Wrong pin. Please try again.</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
 	this.pages.timeout=this.newPage('timeout','<div class="abs_center"><h1>Timeout!</h1><p>Please take your card...</p></div>');
@@ -99,7 +101,7 @@ atm.presentation.initializePages = function() {
 
 atm.presentation.testPages = function() {
 	var body = document.querySelector('body');
-	var header = document.createElement('header');
+	var header = document.querySelector('header') || document.createElement('header');
 	header.innerHTML = '<label>Systems page test:&nbsp;</label>';
 	function addPageButton(page) {
 		var btn = document.createElement('button');
@@ -152,7 +154,7 @@ atm.service.session={
 
 atm.service.init = function () {
 	// initialize the app
-	var boot_timer = 500;
+	var boot_timer = 1000;
 
 	var name = 'atm.service.init()';
 	//logThis(this);
@@ -164,12 +166,15 @@ atm.service.init = function () {
 	// load test pages
 	atm.presentation.testPages();
 
-	// add event listeners
+	// add event listeners for quit buttons
 	var quitButtons = atm.presentation.shadow.querySelectorAll('button[id*=quit]');
 	console.log(quitButtons);
 	for (var l=0; l<quitButtons.length; l++) {
 		quitButtons[l].addEventListener('click',atm.service.quit,false);
 	}
+
+	// add event listeners for user action buttons
+	atm.presentation.shadow.querySelector("#action_insert_card").addEventListener('click', function(){atm.presentation.activatePage('dialpin')},false);
 	
 	// first activate the startup page
 	atm.presentation.activatePage('startup');
@@ -190,6 +195,8 @@ atm.service.quit = function () {
 	console.log('quitting ...');
 	atm.presentation.activatePage('goodbye');
 	atm.service.ejectCard();
+	window.setTimeout(atm.service.init,2000);
+
 }
 
 /*
