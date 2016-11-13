@@ -45,7 +45,7 @@ atm.presentation.initializePages = function() {
 	this.shadow=document.createElement('div');
 	this.pages=[];
 	this.pages.startup=this.newPage('startup', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Starting up</p></div></div>');
-	this.pages.insertcard=this.newPage('insertcard', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Please insert card...<object class="abs right middle" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
+	this.pages.insertcard=this.newPage('insertcard', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Please insert card...<object class="svgAnimation" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
 	this.pages.dialpin=this.newPage('dialpin', '<div class="abs_center"><h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin" type="button" class="btn btn-lg btn-default">OK</button></div>');
 	this.pages.wrongpin=this.newPage('wrongpin','<div class="abs_center"><h1>Wrong pin. Please try again.</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/><button id="button_verify_pin_wrong" type="button" class="btn btn-lg btn-default">OK</button></div>');
 	this.pages.timeout=this.newPage('timeout','<div class="abs_center"><h1>Timeout!</h1><p>Please take your card...</p></div>');
@@ -53,7 +53,8 @@ atm.presentation.initializePages = function() {
 	this.pages.cardretained=this.newPage('cardretained','<div class="abs_center"><h1>Card has been pin-blocked and retained by this ATM!</h1><p><strong>Reason:</strong> Too many unsuccessful pin attempts.</p><p>Please contact the bank during the opening hours.</p></div>');
 	this.pages.home=this.newPage('home','<button id="btn_home_balance"  class="fixed left top">Balance</button><button id="btn_home_currency_rates" class="fixed left middle">Currency Rates</button><button id="btn_home_quit" class="fixed left bottom">Quit</button><button id="btn_home_withdraw" class="fixed right top">Withdraw</button><button id="btn_home_pay" class="fixed right middle">Payments</button>');
 	this.pages.cash=this.newPage('cash','<button id="btn_cash_200"  class="fixed left top">200</button><button id="btn_cash_500" class="fixed left middle">500</button><button id="btn_cash_cancel" class="fixed left bottom">Cancel</button><button id="btn_cash_1000" class="fixed right top">1000</button><button id="btn_cash_2000" class="fixed right middle">2000</button><button id="btn_cash_other" class="fixed right bottom">Other</button><div class="abs_center"><h1>Withdraw cash</h1><p>Choose desired amount or press "Other".</p></div>');
-	this.pages.othercash=this.newPage('othercash','<button id="btn_othercash_confirm"  class="fixed right bottom">Confirm</button><button id="btn_othercash_cancel" class="fixed left bottom">Cancel</button><div class="abs_center"><h1>Withdraw cash</h1><p>Input amount in whole 200 NOK...</p><input type="number" step="200" min="0" max="10000"/></div>');
+	this.pages.othercash=this.newPage('othercash','<button for="other_amount_input" id="btn_othercash_confirm" class="fixed right bottom">Confirm</button><button id="btn_othercash_cancel" class="fixed left bottom">Cancel</button><div class="abs_center"><h1>Withdraw cash</h1><output id="cashAmount" data-max="10000" data-min="0" name="cashAmount">0</output><button for="cashAmount" class="cashDiff" value="100">+ 100</button><button for="cashAmount" class="cashDiff" value="200">+ 200</button><button for="cashAmount" class="cashDiff" value="500">+ 500</button><button for="cashAmount" class="cashDiff" value="1000">+1000</button><button for="cashAmount" class="cashDiff clear" value="-100">- 100</button><button for="cashAmount" class="cashDiff" value="-200">- 200</button><button for="cashAmount" class="cashDiff" value="-500">- 500</button><button for="cashAmount" class="cashDiff" value="-1000">-1000</button></div>');
+
 	// add all pages to shadow
 	this.inactivateAllPages();
 
@@ -66,6 +67,31 @@ atm.presentation.initializePages = function() {
 			target.blur();
 		}, false);
 	}
+
+	// increase/decrease amounts
+	function changeCashAmount(el) {
+		var diff = parseInt(el.getAttribute('value'));
+		var output_el = document.querySelector('#' + el.getAttribute('for'));
+		
+		var current_value = parseInt(output_el.value);
+		var max = parseInt(output_el.getAttribute('data-max'));
+		var min = parseInt(output_el.getAttribute('data-min'));
+		console.log(min + ' :min and max: ' +  max + 'diff: ' + diff);
+		if((current_value + diff) >= min && (current_value + diff) <= max) {
+			output_el.value = parseInt(current_value) + diff;	
+		} else if ((current_value + diff) > max) {
+			output_el.value = max;
+		} else if ((current_value + diff) < min) {
+			output_el.value = min;
+		}
+	}
+
+	var cashDiffButtons = this.shadow.querySelectorAll('.cashDiff');
+	for (var k=0; k<cashDiffButtons.length; k++) {
+		cashDiffButtons[k].addEventListener('click',function(event){
+			changeCashAmount(event.target); }, false);
+	}
+
 }
 
 atm.presentation.testPages = function() {
@@ -123,6 +149,7 @@ atm.service.session={
 
 atm.service.init = function () {
 	// initialize the app
+	var boot_timer = 500;
 
 	var name = 'atm.service.init()';
 	//logThis(this);
@@ -138,7 +165,7 @@ atm.service.init = function () {
 	atm.presentation.activatePage('startup');
 	
 	// activate dialpin page after 3 seconds
-	window.setTimeout(function(){atm.presentation.activatePage('insertcard');},3000);
+	window.setTimeout(function(){atm.presentation.activatePage('insertcard');},boot_timer);
 }
 
 /*
