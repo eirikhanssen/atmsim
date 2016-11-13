@@ -231,6 +231,20 @@ atm.presentation.activatePage = function (page) {
 	this.main.appendChild(this.pages[page]);
 }
 
+atm.presentation.updateRates = function (rates) {
+	console.log(rates);
+	var currencies = document.createElement('div');
+	currencies.innerHTML="<h2>Current rates against: <strong>" + rates.base + "</strong></h2>";
+	currencies.innerHTML += "<ol>";
+	currencies.innerHTML += "<li>1 " + rates.base + " = " + rates.rates['EUR'] + " EUR</li>";
+	currencies.innerHTML += "<li>1 " + rates.base + " = " + rates.rates['USD'] + " USD</li>";
+	currencies.innerHTML += "<li>1 " + rates.base + " = " + rates.rates['SEK'] + " SEK</li>";
+	currencies.innerHTML += "<li>1 " + rates.base + " = " + rates.rates['DKK'] + " DKK</li>";
+	currencies.innerHTML += "<li>1 " + rates.base + " = " + rates.rates['CNY'] + " CNY</li>";
+	currencies.innerHTML += "</ol>";
+	this.pages.currencies.querySelector("#" + 'currency_container').appendChild(currencies);
+	this.pages.currencies.querySelector("#" + 'currency_updated_date').innerText=rates.date;
+}
 
 
 /*
@@ -258,6 +272,19 @@ atm.service.session={
 	}
 };
 
+atm.service.getRates = function() {
+	var rates;
+	var xhttp = new XMLHttpRequest();
+  	xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      rates = JSON.parse(this.responseText);
+      atm.presentation.updateRates(rates);
+    }
+  };
+  xhttp.open("GET", "http://api.fixer.io/latest?base=NOK", true);
+  xhttp.send();
+}
+
 atm.service.loginAttempt = function (pin) {
 	// security breach
 	atm.service.session.setCurrentSessionPin(pin);
@@ -266,6 +293,7 @@ atm.service.loginAttempt = function (pin) {
 
 atm.service.init = function () {
 	// start up the persistence layer
+	atm.service.getRates();
 	atm.business.init();
 
 	// initialize the app
