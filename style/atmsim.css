@@ -193,7 +193,7 @@ output#cashAmount, output#showBalance {
 	text-align: right;
 	border: 1px solid black;
 	padding-right: .75em;
-	width: 7em;
+	width: 9em;
 	margin: .25em 0;
 }
 

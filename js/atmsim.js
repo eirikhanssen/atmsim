@@ -432,9 +432,9 @@ atm.persistence.init = function() {
 		// add some user accounts
 		// should check if they already exist...
 		if(!this.initialized) {
-			this.bankAccounts.push(new this.BAcc({accountNumber:'123456789', pin:1234, balance:24500,currency:'NOK'}));
-			this.bankAccounts.push(new this.BAcc({accountNumber:'987654321', pin:9876, balance:32500,currency:'NOK'}));
-			this.bankAccounts.push(new this.BAcc({accountNumber:'012481632', pin:0124, balance:18500,currency:'NOK'}));
+			this.bankAccounts.push(new this.BAcc({accountNumber:'123456789', pin:'1234', balance:24500,currency:'NOK'}));
+			this.bankAccounts.push(new this.BAcc({accountNumber:'987654321', pin:'9876', balance:32500,currency:'NOK'}));
+			this.bankAccounts.push(new this.BAcc({accountNumber:'012481632', pin:'0124', balance:2300450,currency:'NOK'}));
 		}
 		this.initialized = true;
 	}
