@@ -168,10 +168,12 @@ atm.service.init = function () {
 
 	// add event listeners for quit buttons
 	var quitButtons = atm.presentation.shadow.querySelectorAll('button[id*=quit]');
-	console.log(quitButtons);
+	
 	for (var l=0; l<quitButtons.length; l++) {
 		quitButtons[l].addEventListener('click',atm.service.quit,false);
 	}
+
+	// verify pin button
 
 	// add event listeners for user action buttons
 	atm.presentation.shadow.querySelector("#action_insert_card").addEventListener('click', function(){atm.presentation.activatePage('dialpin')},false);
@@ -181,6 +183,9 @@ atm.service.init = function () {
 	
 	// activate dialpin page after 3 seconds
 	window.setTimeout(function(){atm.presentation.activatePage('insertcard');},boot_timer);
+
+	// start up the persistence layer
+	atm.business.init();
 }
 
 atm.service.ejectCard = function () {
@@ -207,11 +212,98 @@ atm.service.quit = function () {
 
 atm.business.name='atm.business';
 
+atm.business.init = function () {
+	var name = "atm.business.init()";
+	log(name);
+
+	// initialize the persistence layer
+	atm.persistence.init();
+}
+
+atm.business.getAccounts = function () {
+	atm.persistence.getAccountList();
+}
+
 /*
 	============================================
 	 Persistence layer
 	============================================
 */
 atm.persistence.name='atm.persistence';
+atm.persistence.bankAccounts=[];
+
+atm.persistence.getAccountList = function () {
+	var len = this.bankAccounts.length;
+	var accoutList = [];
+	for(var i=0; i<len, i++;) {
+		accoutList.push(this.bankAccounts[i].getAccountNumber());
+	}
+	return accountList;
+}
+
+atm.persistence.init = function() {
+		var name = 'atm.persistence.init()';
+		log(name);
+		// add some user accounts
+		// should check if they already exist...
+		this.bankAccounts.push(new this.BAcc({accountNumber:'123456789', pin:1234, balance:24500,currency:'NOK'}));
+		this.bankAccounts.push(new this.BAcc({accountNumber:'987654321', pin:9876, balance:32500,currency:'NOK'}));
+		this.bankAccounts.push(new this.BAcc({accountNumber:'012481632', pin:0124, balance:18500,currency:'NOK'}));
+}
+
+
+atm.persistence.BAcc = function (props) {
+	var that = this;
+	this.blocked = false;
+	this.failedattempts = 0;
+	this.pin = props.pin;
+	this.accountNumber = props.accountNumber;
+	this.balance = parseInt(props.balance);
+	this.currency = props.currency;
+	this.pincodeMistakes = 0;
+	console.log('creating account: ', that.accountNumber);
+	this.isBlocked = function() {
+		return that.blocked;
+	};
+	this.verifyPin = function(str) {
+		if(that.pin === str && that.blocked === false) {
+			that.failedattempts = 0;
+			return true;
+		} else {
+			that.failedattempts ++;
+			if (that.failedattempts >= 3) {
+				that.blocked = true;
+			}
+			return false;
+		}
+	};
+	this.getAccountNumber = function() {
+		return that.accountNumber;
+	};
+	this.withdrawAmount = function(num) {
+		if(num <= that.balance) {
+			that.balance = that.balance - num;	
+			return num;
+		} else {
+			// not enough balance!
+			return 0;
+		}
+	};
+	this.insertAmount = function(num) {
+		that.balance = that.balance + num;
+	};
+	this.getBalance = function() {
+		return that.balance;
+	};
+	return {
+		withdrawAmount: that.withdrawAmount,
+		insertAmount: that.insertAmount,
+		getBalance: that.getBalance,
+		verifyPin: that.verifyPin,
+		isBlocked: that.isBlocked,
+		getAccountNumber: that.getAccountNumber
+	};
+}
+
 
 window.addEventListener('load',atm.service.init,false);

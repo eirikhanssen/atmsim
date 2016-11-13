@@ -11,8 +11,6 @@
       <![CDATA[
 		window.addEventListener('load',svginit, false);
 		
-		
-		
 		function svginit() {
 		 var cards = document.getElementById('cards');
 		 var symbols = document.querySelectorAll('symbol');
@@ -26,7 +24,7 @@
 		    cards.setAttribute('xlink:href', '#' + symbols[currentSymbol].id);
 		    window.setTimeout(cycleSymbols, 1000);
 		 }
-		 console.log('svg script started');
+		 console.log('svg: insertcard carousel script started');
 		 cycleSymbols();
 		}
 		
