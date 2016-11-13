@@ -87,6 +87,7 @@ atm.presentation.initializePages = function() {
 	this.shadow.querySelector('#button_wrongpin_ok').addEventListener('click',function(event){
 		var pinvalue = document.querySelector('#input_wrongpin').value;
 		atm.service.loginAttempt(pinvalue);
+		atm.presentation.clearPin();
 	},false);
 
 	// activate home page buttons
@@ -197,6 +198,9 @@ atm.presentation.initializePages = function() {
 
 }
 
+atm.presentation.clearPin = function () {
+	document.querySelector('#' + 'input_wrongpin').value="";
+}
 atm.presentation.testPages = function() {
 	var body = document.querySelector('body');
 	var header = document.querySelector('header') || document.createElement('header');
