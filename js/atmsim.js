@@ -54,7 +54,7 @@ atm.presentation.initializePages = function() {
 	this.pages=[];
 	this.pages.startup=this.newPage('startup', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Starting up</p></div></div>');
 	this.pages.insertcard=this.newPage('insertcard', '<div class="actionbuttons"></div><div class="abs_center"><h1>Meccano ATMs!</h1><p>Please insert card... <object class="abs right middle" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
-	this.pages.dialpin=this.newPage('dialpin', '<button class="fixed bottom right" id="button_verify_pin_ok" type="button" class="btn btn-lg btn-default">OK</button><button class="fixed bottom left" id="button_verify_pin_quit" type="button" class="btn btn-lg btn-default">Quit</button><div class="abs_center"><h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
+	this.pages.dialpin=this.newPage('dialpin', '<button class="fixed bottom right" id="button_verify_pin_ok" type="button" class="btn btn-lg btn-default">OK</button><button class="fixed bottom left" id="button_verify_pin_quit" type="button" class="btn btn-lg btn-default">Quit</button><div class="abs_center"><h1>Enter pin</h1><p>Please hide your pin while typing.</p><input id="input_dialpin" type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
 	this.pages.wrongpin=this.newPage('wrongpin','<button class="fixed bottom right" id="button_wrongpin_ok" type="button" class="btn btn-lg btn-default">OK</button><button class="fixed bottom left" id="button_wrongpin_quit" type="button" class="btn btn-lg btn-default">Quit</button><div class="abs_center"><h1>Wrong pin. Please try again.</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
 	this.pages.timeout=this.newPage('timeout','<div class="abs_center"><h1>Timeout!</h1><p>Please take your card...</p></div>');
 	this.pages.goodbye=this.newPage('goodbye','<div class="abs_center"><h1>Goodbye!</h1><p>Exiting...</p>');
@@ -66,8 +66,17 @@ atm.presentation.initializePages = function() {
 	this.pages.paybill=this.newPage('paybill','<button id="btn_paybills_cancel" class="fixed left bottom">Cancel</button><button id="btn_paybills_confirm" class="fixed right bottom">Confirm</button><div class="abs_center"><h1>Make a payment</h1><fieldset><label id="paybill_showBalance_label">Current balance: <output id="paybill_showBalance" name="paybill_showBalance">0</output></label><label>Recipient account: <input id="paybill_recipient_account_number" name="paybill_recipient_account_number" type="text"/></label><label>Amount: <input id="paybill_amount" type="number"/></label></fieldset></div>');
 	this.pages.confirmpayment=this.newPage('confirmpayment','<button for="other_amount_input" id="btn_confirm_payment_confirm" class="fixed right bottom">Confirm</button><button id="btn_confirm_payment_cancel" class="fixed left bottom">Cancel</button><div class="abs_center"><h1>Dial pin to confirm the transaction</h1><p>Please hide your pin while typing.</p><input id="input_pin_confirm_transaction" type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
 	this.pages.currencies=this.newPage('currencies','<button id="btn_currency_go_back" class="fixed left bottom">Go back</button><div class="abs_center"><h1>Currency Rates</h1><p>Last updated: <span id="currency_updated_date"></span></p><div id="currency_container"></div></div>');
+
+
 	// add all pages to shadow
 	this.inactivateAllPages();
+
+	// activate button_verify_pin_ok
+
+	this.shadow.querySelector('#button_verify_pin_ok').addEventListener('click',function(event){
+		var pinvalue = document.querySelector('#input_dialpin').value;
+		atm.service.loginAttempt(pinvalue);
+	},false);
 
 	var buttons = this.shadow.querySelectorAll('button');
 
@@ -189,6 +198,10 @@ atm.service.session={
 	}
 };
 
+atm.service.loginAttempt = function (pin) {
+	atm.business.loginAttempt(this.session.getCurrentSessionAccount(), pin);
+}
+
 atm.service.init = function () {
 	// start up the persistence layer
 	atm.business.init();
@@ -264,6 +277,21 @@ atm.business.getAccounts = function () {
 	return atm.persistence.getAccountList();
 }
 
+atm.business.loginAttempt = function(acc, pin) {
+	if(atm.persistence.isBlocked(acc)){
+		// card is blocked
+		atm.service.retainCard();
+		atm.presentation.activatePage('cardretained');
+		} else if(!atm.persistence.pinVerified(acc,pin)) {
+			// card is not blocked yet, but pin is not verified
+			atm.presentation.activatePage('wrongpin');
+		} else {
+			// pin is verified
+			atm.presentation.activatePage('home');
+		}
+
+	}
+
 /*
 	============================================
 	 Persistence layer
@@ -298,6 +326,34 @@ atm.persistence.init = function() {
 		this.initialized = true;
 	}
 
+atm.persistence.isBlocked = function(acc) {
+	// return true or false
+	for (var i = 0; i < this.bankAccounts.length; i++) {
+		if (this.bankAccounts[i].getAccountNumber() === acc) {
+			return this.bankAccounts[i].isBlocked();
+		}
+	}
+}
+
+atm.persistence.pinVerified = function (acc,pin) {
+	// try to verify a pin attempt
+	var name = "atm.persistence.pinVerified()";
+	log(name);
+	console.log('debug, acc: ' + acc+ ' pin: ' + pin);
+	for (var i = 0; i < this.bankAccounts.length; i++) {
+		if (this.bankAccounts[i].getAccountNumber() === acc) {
+			console.log("debug, found matching acc: " + acc);
+			if(this.bankAccounts[i].verifyPin(pin)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+	// didn't find match
+	console.log('unknown accountNumber');
+	return false;
+}
 
 atm.persistence.BAcc = function (props) {
 	var that = this;
@@ -313,7 +369,7 @@ atm.persistence.BAcc = function (props) {
 		return that.blocked;
 	};
 	this.verifyPin = function(str) {
-		if(that.pin === str && that.blocked === false) {
+		if(that.pin.toString() === str.toString() && that.blocked === false) {
 			that.failedattempts = 0;
 			return true;
 		} else {
