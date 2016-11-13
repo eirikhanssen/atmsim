@@ -47,7 +47,7 @@ atm.presentation.initializePages = function() {
 	this.shadow.innerHTML="";
 	this.pages=[];
 	this.pages.startup=this.newPage('startup', '<div class="abs_center"><h1>Meccano ATMs</h1><p>Starting up</p></div></div>');
-	this.pages.insertcard=this.newPage('insertcard', '<p id="action_insert_card">[Physically insert the card]</p><div class="abs_center"><h1>Meccano ATMs</h1><p>Please insert card... <object class="abs right middle" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
+	this.pages.insertcard=this.newPage('insertcard', '<div class="footer"></div><div class="abs_center"><h1>Meccano ATMs!</h1><p>Please insert card... <object class="abs right middle" type="image/svg+xml" data="media/insertcard.svg"></p></div>');
 	this.pages.dialpin=this.newPage('dialpin', '<button class="fixed bottom right" id="button_verify_pin_ok" type="button" class="btn btn-lg btn-default">OK</button><button class="fixed bottom left" id="button_verify_pin_quit" type="button" class="btn btn-lg btn-default">Quit</button><div class="abs_center"><h1>Enter pin</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
 	this.pages.wrongpin=this.newPage('wrongpin','<button class="fixed bottom right" id="button_wrongpin_ok" type="button" class="btn btn-lg btn-default">OK</button><button class="fixed bottom left" id="button_wrongpin_quit" type="button" class="btn btn-lg btn-default">Quit</button><div class="abs_center"><h1>Wrong pin. Please try again.</h1><p>Please hide your pin while typing.</p><input type="password" class="input-lg" maxlength="4" pattern="\d{4}"/></div>');
 	this.pages.timeout=this.newPage('timeout','<div class="abs_center"><h1>Timeout!</h1><p>Please take your card...</p></div>');
@@ -71,6 +71,32 @@ atm.presentation.initializePages = function() {
 			target = event.target;
 			target.blur();
 		}, false);
+	}
+
+	// action to log into different accounts
+
+	
+
+	function createLoginActionElement(accnum) {
+		var name = 'createLoginActionElement(' + accnum +')';
+		console.log(name);
+		var el = document.createElement('button');
+		el.id="action_acc_login_" + accnum;
+		el.innerText="insert card: [" + accnum + "]";
+		el.setAttribute('data-account', accnum);
+		el.setAttribute('class','actionButton');
+		el.addEventListener('click', function(event){
+			var target = event.target;
+			atm.service.session.setCurrentSessionAccount(target.getAttribute("data-account"));
+			atm.presentation.activatePage('dialpin');
+		},false);
+		return el;
+	}
+
+	var accounts = atm.business.getAccounts();
+	for(var l = 0; l < accounts.length; l++) {
+		var currentAccNum = accounts[l];
+		this.shadow.querySelector('#' + 'insertcard .footer').appendChild(createLoginActionElement(currentAccNum));
 	}
 
 	// increase/decrease amounts
@@ -149,10 +175,19 @@ atm.presentation.activatePage = function (page) {
 atm.service.name='atm.service';
 
 atm.service.session={
-
+	currentAccount: null,
+	setCurrentSessionAccount: function(val) {
+		this.currentAccount = val;
+	},
+	getCurrentSessionAccount: function() {
+		return this.currentAccount;
+	}
 };
 
 atm.service.init = function () {
+	// start up the persistence layer
+	atm.business.init();
+
 	// initialize the app
 	var boot_timer = 1000;
 
@@ -175,29 +210,28 @@ atm.service.init = function () {
 
 	// verify pin button
 
-	// add event listeners for user action buttons
-	atm.presentation.shadow.querySelector("#action_insert_card").addEventListener('click', function(){atm.presentation.activatePage('dialpin')},false);
-	
 	// first activate the startup page
 	atm.presentation.activatePage('startup');
 	
 	// activate dialpin page after 3 seconds
 	window.setTimeout(function(){atm.presentation.activatePage('insertcard');},boot_timer);
 
-	// start up the persistence layer
-	atm.business.init();
+	
 }
 
 atm.service.ejectCard = function () {
-	console.log('ejecting card...');
+	var name = "atm.service.ejectCard()";
+	log(name);
 }
 
 atm.service.retainCard = function () {
-	console.log('retaining card');
+	var name = "atm.service.retainCard()";
+	log(name);
 }
 
 atm.service.quit = function () {
-	console.log('quitting ...');
+	var name = "atm.service.quit()";
+	log(name);
 	atm.presentation.activatePage('goodbye');
 	atm.service.ejectCard();
 	window.setTimeout(atm.service.init,2000);
@@ -221,7 +255,7 @@ atm.business.init = function () {
 }
 
 atm.business.getAccounts = function () {
-	atm.persistence.getAccountList();
+	return atm.persistence.getAccountList();
 }
 
 /*
@@ -233,12 +267,15 @@ atm.persistence.name='atm.persistence';
 atm.persistence.bankAccounts=[];
 
 atm.persistence.getAccountList = function () {
-	var len = this.bankAccounts.length;
-	var accoutList = [];
-	for(var i=0; i<len, i++;) {
-		accoutList.push(this.bankAccounts[i].getAccountNumber());
+	var name = "atm.persistence.getAccountList()";
+	log(name);
+	var len = atm.persistence.bankAccounts.length;
+	var accountList = [];
+	for(var i=0; i<len; i++) {
+		accountList[i] = atm.persistence.bankAccounts[i].getAccountNumber();
 	}
 	return accountList;
+
 }
 
 atm.persistence.init = function() {
